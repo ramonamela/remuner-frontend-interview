@@ -1,11 +1,10 @@
 <template>
-    <!-- open-on-hover -->
-    <v-menu :position-x="0" :position-y="20" background-color="transparent">
+    <v-menu open-on-hover :position-x="0" :position-y="20" background-color="transparent">
         <template v-slot:activator="{ props }">
             <v-btn class="hover-menu-icon" icon="mdi-dots-vertical" v-bind="props"></v-btn>
         </template>
         <v-list class="hover-menu-list">
-            <v-list-item v-for="(item, index) in items" :key="index" :value="index" class="hover-menu-item">
+            <v-list-item v-for="(item, index) in items" :key="index" :value="index" class="hover-menu-item" @click="handleItemClick(item)">
                 <v-list-item-content class="d-flex">
                     <v-list-item-avatar class="hover-menu-list-icon">
                         <v-icon class="hover-menu-list-icon" size="x-small">{{ item.icon }}</v-icon>
@@ -19,12 +18,17 @@
   
 <script>
 export default {
-    data: () => ({
-        items: [
-            { title: 'Click Me', icon: 'mdi-cog' },
-            { title: 'Click Me 2', icon: 'mdi-pencil' },
-        ],
-    })
+    props: {
+        items: {
+            type: Object,
+            default: []
+        }
+    },
+    methods: {
+        handleItemClick(item) {
+            item.action()
+        }
+    }
 }
 </script>
 

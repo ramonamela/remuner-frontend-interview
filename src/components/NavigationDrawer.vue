@@ -28,7 +28,7 @@
                 <v-list-item prepend-icon="mdi-connection" title="" value="integrations" v-if="rail" class="v-list-icon">
                 </v-list-item>
                 <v-list-item title="" value="integrations" v-if="!rail">
-                    <div class="nav-title-selected">Integraciones</div>
+                    <div class="nav-title-selected random-integrations-spacing">Integraciones</div>
                 </v-list-item>
             </router-link>
 
@@ -83,6 +83,13 @@ export default {
 }
 </script>
 
+<style>
+.router-link-active > .v-list-item > .v-list-item__prepend {
+    color: #222326;
+    opacity: 1;
+}
+</style>
+
 <style scoped>
 .v-list-item--link {
     margin: 5px;
@@ -100,6 +107,10 @@ export default {
 
 .v-list {
     padding: 0px;
+}
+
+.random-integrations-spacing {
+    letter-spacing: -0.442px;
 }
 
 .fixedBottom {

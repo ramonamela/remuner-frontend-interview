@@ -4,7 +4,7 @@
     <v-row class="fill-height">
       <!-- Create columns using v-col -->
       <v-col cols="12" md="6">
-        <GridCard cardTitle="Prueba técnica">
+        <GridCard cardTitle="Prueba técnica" :cardActions="firstCardActions">
           First card
         </GridCard>
       </v-col>
@@ -18,7 +18,7 @@
         </v-row>
       </v-col>
       <v-col cols="12" md="12">
-        <GridCard>
+        <GridCard cardTitle="Modelo de datos">
           Last card
         </GridCard>
       </v-col>
@@ -29,7 +29,11 @@
 
 <script setup>
 import GridCard from '@/components/GridCard.vue'
-import SimpleCard from '@/components/SimpleCard.vue'
-import TitledCard from '@/components/TitledCard.vue'
 import ViewComponent from '@/components/ViewComponent.vue'
+
+const firstCardActions = [
+            { title: 'Config', icon: 'mdi-cog', action: () => {alert("Config")} },
+            { title: 'Editar', icon: 'mdi-pencil', action: () => {alert("Editar")}},
+        ];
+
 </script>
