@@ -1,0 +1,50 @@
+version: "3.7"
+
+services:
+  remuner-frontend:
+    build:
+      context: .
+      target: remuner-frontend-dev
+    image: remuner-frontend-dev
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - build
+
+  remuner-frontend-dev:
+    build:
+      context: .
+      target: remuner-frontend-dev
+    image: remuner-frontend-dev
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
+    ports:
+      - "3000:3000"
+    entrypoint: npm run dev
+
+  remuner-frontend-prod:
+    build:
+      context: .
+      target: remuner-frontend-prod
+    image: remuner-frontend-prod
+    ports:
+      - "8080:8080"
+    depends_on:
+      - build
+
+  build:
+    build:
+      context: .
+      target: remuner-frontend-dev
+    image: remuner-frontend-dev
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
+    entrypoint: npm run build
