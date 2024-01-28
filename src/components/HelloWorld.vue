@@ -7,10 +7,6 @@
 
       <h1 class="text-h2 font-weight-bold">Vuetifyy</h1>
 
-      <router-link to="/about">
-          <v-btn color="primary">Go to About Page</v-btn>
-        </router-link>
-
       <div class="py-14" />
 
       <v-row class="d-flex align-center justify-center">
