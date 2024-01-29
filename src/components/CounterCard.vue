@@ -1,13 +1,14 @@
 <template>
-    <div class="container">
-        <div class="title">{{ title }}</div>
-        <div class="counter">{{ counter }}</div>
-    </div>
+    <router-link v-if="targetRoute" style="text-decoration: none; color: inherit;" :to="targetRoute">
+        <div class="container">
+            <div class="title">{{ title }}</div>
+            <div class="counter">{{ counter }}</div>
+        </div>
+    </router-link>
 </template>
 
 <script setup>
-const { title, counter } = defineProps(['title', 'counter']);
-
+const { title, counter } = defineProps(['title', 'counter', 'targetRoute']);
 </script>
 
 <style scoped>
@@ -30,11 +31,10 @@ const { title, counter } = defineProps(['title', 'counter']);
 .counter {
     justify-content: flex-end;
     color: #5E6AD2;
-font-family: Montserrat;
-font-size: 32px;
-font-style: normal;
-font-weight: 700;
-line-height: 32px; /* 100% */
-letter-spacing: 1px;
+    font-size: 32px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 32px;
+    letter-spacing: 1px;
 }
 </style>

@@ -21,17 +21,17 @@
           <v-row>
             <v-col cols="12">
               <GridCard>
-                <CounterCard title="Usuarios" counter="15"></CounterCard>
+                <CounterCard title="Usuarios" counter="15" targetRoute="/users"></CounterCard>
               </GridCard>
             </v-col>
             <v-col cols="12">
               <GridCard>
-                <CounterCard title="Equipos" counter="2"></CounterCard>
+                <CounterCard title="Equipos" counter="2" targetRoute="/teams"></CounterCard>
               </GridCard>
             </v-col>
             <v-col cols="12">
               <GridCard>
-                <CounterCard title="Integraciones" counter="4"></CounterCard>
+                <CounterCard title="Integraciones" counter="4" targetRoute="/integrations"></CounterCard>
               </GridCard>
             </v-col>
           </v-row>
