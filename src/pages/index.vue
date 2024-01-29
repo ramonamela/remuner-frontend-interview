@@ -20,13 +20,19 @@
         <v-col cols="12" md="6">
           <v-row>
             <v-col cols="12">
-              <GridCard>Usuarios</GridCard>
+              <GridCard>
+                <CounterCard title="Usuarios" counter="15"></CounterCard>
+              </GridCard>
             </v-col>
             <v-col cols="12">
-              <GridCard>Equipos</GridCard>
+              <GridCard>
+                <CounterCard title="Equipos" counter="2"></CounterCard>
+              </GridCard>
             </v-col>
             <v-col cols="12">
-              <GridCard>Integraciones</GridCard>
+              <GridCard>
+                <CounterCard title="Integraciones" counter="4"></CounterCard>
+              </GridCard>
             </v-col>
           </v-row>
         </v-col>
