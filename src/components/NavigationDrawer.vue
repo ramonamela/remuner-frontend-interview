@@ -36,7 +36,7 @@
             <v-list-item prepend-icon="mdi-email-outline" :href="'mailto:help@company.com'" title="" value="email"
                 v-if="rail" class="fixedBottom v-list-icon">
             </v-list-item>
-            <v-list-item v-if="!rail" class="fixedBottom">
+            <v-list-item v-if="!rail" class="contact-container">
                 <div class="v-nav-help-text-format">
                     <div class="v-nav-help-doubts">Any doubts?</div>
                     <div class="v-nav-help-contact">Contact us at:</div>
@@ -113,9 +113,10 @@ export default {
     letter-spacing: -0.442px;
 }
 
-.fixedBottom {
+.contact-container {
     position: fixed;
     bottom: 0;
+    padding: 15px;
 }
 
 a {
