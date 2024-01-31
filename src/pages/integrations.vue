@@ -1,7 +1,7 @@
 <template>
   <ViewComponent title="INTEGRACIONES">
 Integraciones
-</ViewComponent>
+  </ViewComponent>
 </template>
   
 <script setup>
