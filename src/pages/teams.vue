@@ -1,19 +1,41 @@
 <template>
-  <ViewComponent title="EQUIPOS">
-        <PaginatedTable :headerDefinition="headerDefinition" :items="items" :secondaryTableHeaders="secondaryTableHeaders"></PaginatedTable>
-  </ViewComponent>
+    <ViewComponent title="EQUIPOS">
+        <PaginatedTable :headerDefinition="headerDefinition" :items="items" :secondaryTableHeaders="secondaryTableHeaders" deleteDialogConfig="true">
+        </PaginatedTable>
+    </ViewComponent>
 </template>
   
 <script>
 import ViewComponent from '@/components/ViewComponent.vue'
 import PaginatedTable from '@/components/PaginatedTable.vue'
 import axios from 'axios';
-import Teams from './teams.vue';
+import { ref } from 'vue';
 const vue_app_backend = import.meta.env.VITE_APP_BACKEND_BASE_URL;
-let items = [];
+let items = ref([]);
 let headerDefinition = [
     { title: 'Equipo', key: 'name', align: 'start' },
 ]
+
+const deleteTeam = async function (item) {
+    let indexToRemove = items.value.findIndex(
+        listItem => listItem.id === item.id
+    )
+    if (indexToRemove === -1) {
+        throw ("Error en el borrado");
+    } else {
+        axios.delete(vue_app_backend + '/v1/teams/' + item.id, {
+            headers: {
+                'Accept': 'application/json',
+                'X-API-Version': '1',
+            }
+        }).then(() => {
+            items.value.splice(indexToRemove, 1);
+        }).catch((error) => {
+            throw ("Error en el borrado")
+        });
+    }
+}
+
 
 export default {
     data() {
@@ -21,9 +43,11 @@ export default {
             items,
             headerDefinition,
             secondaryTableHeaders: [
-                { key: "users", definition: [    { title: 'Nombre', key: 'first_name', align: 'start' },
-    { title: 'Apellido', key: 'last_name' },
-    { title: 'Correo electrónico', key: 'email' },] },
+                {
+                    key: "users", definition: [{ title: 'Nombre', key: 'first_name', align: 'start' },
+                    { title: 'Apellido', key: 'last_name' },
+                    { title: 'Correo electrónico', key: 'email' },]
+                },
             ],
         };
     },
@@ -40,11 +64,15 @@ export default {
                 }
             })
                 .then((response) => {
-                    // Handle successful response
-                    this.items = response.data; // Assign fetched data to items
+                    this.items = response.data;
+                    this.items.forEach(
+                        (element) => {
+                            element.deleteMessage = "Seguro que quieres borrar " + element.email + "?";
+                            element.deleteFunction = deleteTeam
+                        }
+                    )
                 })
                 .catch((error) => {
-                    // Handle errors
                     console.error('There was a problem with the Axios request:', error);
                 });
         }

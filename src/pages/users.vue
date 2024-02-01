@@ -1,7 +1,7 @@
 <template>
     <ViewComponent title="USUARIOS">
         <PaginatedTable :headerDefinition="headerDefinition" :items="items" :secondaryTableHeaders="secondaryTableHeaders"
-            :deleteDialogConfig="deleteDialogConfig"></PaginatedTable>
+            deleteDialogConfig="true"></PaginatedTable>
     </ViewComponent>
 </template>
   
@@ -63,8 +63,7 @@ export default {
                 }
             })
                 .then((response) => {
-                    // Handle successful response
-                    this.items = response.data; // Assign fetched data to items
+                    this.items = response.data;
                     this.items.forEach(
                         (element) => {
                             element.deleteMessage = "Seguro que quieres borrar " + element.email + "?";
@@ -73,7 +72,6 @@ export default {
                     )
                 })
                 .catch((error) => {
-                    // Handle errors
                     console.error('There was a problem with the Axios request:', error);
                 });
         }
