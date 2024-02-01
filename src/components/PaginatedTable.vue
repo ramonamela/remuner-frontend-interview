@@ -16,7 +16,7 @@
             <v-card-text class="text-h5">Error en el borrado</v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue-darken-1" variant="elevated" @click="closeDeleteError">Cancelar</v-btn>
+                <v-btn color="blue-darken-1" variant="elevated" @click="closeDeleteError">Entendido</v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
         </v-card>
@@ -27,9 +27,9 @@
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-spacer></v-spacer>
-                    <v-dialog v-model="dialog" max-width="500px">
+                    <v-dialog v-model="dialogCreateEdit" max-width="700px" @click:outside="closeEdit">
                         <template v-slot:activator="{ props }">
-                            <v-btn color="primary" dark class="mb-2" v-bind="props" variant="tonal">
+                            <v-btn color="primary" dark class="mb-2" v-bind="props" variant="tonal" @click="createItem">
                                 Crear
                             </v-btn>
                         </template>
@@ -38,10 +38,10 @@
                             <v-card>
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
-                                    <v-btn color="blue-darken-1" variant="flat" @click="close">
+                                    <v-btn color="blue-darken-1" variant="flat" @click="closeEdit">
                                         Cancelar
                                     </v-btn>
-                                    <v-btn color="blue-darken-1" variant="text" @click="save">
+                                    <v-btn color="blue-darken-1" variant="text" @click="saveEdit">
                                         Guardar
                                     </v-btn>
                                 </v-card-actions>
@@ -80,13 +80,14 @@
 
 <script>
 
-import { ref } from 'vue';
+import { ref, toRaw } from 'vue';
 
-const dialog = ref(false);
+const dialogCreateEdit = ref(false);
 const dialogDelete = ref(false);
 const dialogDeleteError = ref(false);
-const deletedElement = ref(null);
-const editedElement = ref(-1)
+const deletedElement = ref({deleteMessage: ""});
+const editedElement = ref({});
+let defaultEditedItem;
 
 export default {
     props: {
@@ -109,18 +110,15 @@ export default {
     },
     data() {
         return {
-            dialog,
+            dialogCreateEdit,
             dialogDelete,
             dialogDeleteError,
             deletedElement,
             editedElement,
-            localEditedItem: this.editedItem,
+            defaultEditedItem,
         }
     },
     computed: {
-        formTitle() {
-            return this.editedElement.value === -1 ? 'New Item' : 'Edit Item'
-        },
         enlargedHeaderDefinition() {
             let enlargedHeaderDefinition = [...this.headerDefinition]
             if (this.deleteDialogConfig === "true") {
@@ -135,7 +133,17 @@ export default {
             return this.items
         },
     },
+    mounted() {
+        console.log("Set default edited item")
+        console.log(defaultEditedItem)
+        defaultEditedItem = {...toRaw(this.editedItem)};
+        console.log(defaultEditedItem)
+    },
     methods: {
+        createItem(){
+            console.log("Create item")
+            this.updateEditedItem(defaultEditedItem)
+        },
         generateSecondaryTables(item) {
             let secondaryTables = []
             this.secondaryTableHeaders.forEach(element => {
@@ -150,35 +158,49 @@ export default {
             )
             return secondaryTables;
         },
-        shouldShowItem(item) {
-            return item.items.length > 0
-        },
         editItem(item) {
-            console.log(item)
-            console.log(this.updateEditedItem)
             this.updateEditedItem(item)
-            editedElement.value = item;
-            //this.editedItem.value = Object.assign({}, item);
-            console.log("Open dialog")
-            dialog.value = true;
+            dialogCreateEdit.value = true;
         },
         deleteItem(item) {
             dialogDelete.value = true;
             deletedElement.value = item
         },
         async deleteItemConfirm(item) {
-            await deletedElement.value.deleteFunction(deletedElement.value).catch(() => {
+            await deletedElement.value.deleteFunction(deletedElement.value).then(
+                (result) => {
+                    console.log("Todo ha ido bien")
+                    console.log(result)
+                    if(!result) {
+                        console.log(result)
+                        dialogDeleteError.value = true;
+                    }
+                }
+                ).catch(() => {
+                console.log("Estamos en error")
                 dialogDeleteError.value = true
             });
+            console.log("Cerrar delete item dialog")
             dialogDelete.value = false;
         },
         closeDelete() {
             dialogDelete.value = false;
-            deletedElement = null;
+            deletedElement.value = {deleteMessage: ""};
         },
         closeDeleteError() {
             dialogDeleteError.value = false;
         },
+        closeEdit() {
+            console.log("close");
+            dialogCreateEdit.value = false;
+            editedElement.value = -1;
+        },
+        saveEdit() {
+            console.log("save")
+            console.log()
+            dialogCreateEdit.value = false;
+            editedElement.value = -1;
+        }
     }
 
 }

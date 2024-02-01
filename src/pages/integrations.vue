@@ -10,7 +10,10 @@
 import ViewComponent from '@/components/ViewComponent.vue'
 import PaginatedTable from '@/components/PaginatedTable.vue'
 import axios from 'axios';
-import { ref } from 'vue';
+import Teams from './teams.vue'
+import { ref } from 'vue'
+import {deleteIntegration as deleteItem, getIntegrations} from '@/helpers/http/integrations.js';
+
 const vue_app_backend = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 let items = ref([]);
 let headerDefinition = [
@@ -25,17 +28,13 @@ const deleteIntegration = async function (item) {
     listItem => listItem.id === item.id
   )
   if (indexToRemove === -1) {
-    throw ("Error en el borrado");
+    return false;
   } else {
-    axios.delete(vue_app_backend + '/v1/integrations/' + item.id, {
-      headers: {
-        'Accept': 'application/json',
-        'X-API-Version': '1',
-      }
-    }).then(() => {
+    deleteItem(item).then(() => {
       items.value.splice(indexToRemove, 1);
+      return true;
     }).catch((error) => {
-      throw ("Error en el borrado")
+      return false;
     });
   }
 }
@@ -53,12 +52,7 @@ export default {
   methods: {
     async loadItems() {
       this.items = [];
-      axios.get(vue_app_backend + '/v1/integrations', {
-        headers: {
-          'Accept': 'application/json',
-          'X-API-Version': '1',
-        }
-      })
+      getIntegrations()
         .then((response) => {
           this.items = response.data;
           this.items.forEach(
@@ -75,4 +69,5 @@ export default {
   },
   components: { PaginatedTable }
 }
+
 </script>

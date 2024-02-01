@@ -2,44 +2,24 @@
     <ViewComponent title="USUARIOS">
         <PaginatedTable :headerDefinition="headerDefinition" :items="items" :secondaryTableHeaders="secondaryTableHeaders"
             deleteDialogConfig="true" :editedItem="editedItem" :updateEditedItem="updateEditedItem">
-                <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col
-                    cols="12"
-                    sm="12"
-                    md="12"
-                  >
-                    <v-text-field
-                      v-model="editedItem.first_name"
-                      label="Nombre"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="12"
-                    md="12"
-                  >
-                    <v-text-field
-                      v-model="editedItem.last_name"
-                      label="Apellido"
-                    ></v-text-field>
-                  </v-col>
-                  <v-col
-                    cols="12"
-                    sm="12"
-                    md="12"
-                  >
-                    <v-text-field
-                      v-model="editedItem.email"
-                      label="Correo electrónico"
-                    ></v-text-field>
-                  </v-col>
-                  </v-row>
-                  </v-container>
-                  </v-card-text>
+            <v-card-text>
+                <v-container>
+                    <v-row>
+                        <v-col cols="12" sm="12" md="5">
+                            <v-text-field v-model="editedItem.first_name" label="Nombre"></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="12" md="7">
+                            <v-text-field v-model="editedItem.last_name" label="Apellido"></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="12" md="12">
+                            <v-text-field v-model="editedItem.email" label="Correo electrónico"></v-text-field>
+                        </v-col>
+                        <v-col cols="12" sm="12" md="12">
 
-
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-card-text>
         </PaginatedTable>
     </ViewComponent>
 </template>
@@ -49,12 +29,15 @@ import ViewComponent from '@/components/ViewComponent.vue'
 import PaginatedTable from '@/components/PaginatedTable.vue'
 import axios from 'axios';
 import { ref } from 'vue';
+import { deleteUser as deleteItem, getUsers } from '@/helpers/http/users.js'
 const vue_app_backend = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 let items = ref([]);
 const editedItem = ref({
-    first_name: "Ramon",
-    last_name: "Amela",
-    email: "ramon.amela@gmail.com"
+    id: null,
+    first_name: "a",
+    last_name: "a",
+    email: "a",
+    teams: []
 })
 let headerDefinition = [
     { title: 'Nombre', key: 'first_name', align: 'start' },
@@ -67,17 +50,13 @@ const deleteUser = async function (item) {
         listItem => listItem.id === item.id
     )
     if (indexToRemove === -1) {
-        throw ("Error en el borrado");
+        return false;
     } else {
-        axios.delete(vue_app_backend + '/v1/users/' + item.id, {
-            headers: {
-                'Accept': 'application/json',
-                'X-API-Version': '1',
-            }
-        }).then(() => {
+        deleteItem(item).then((response) => {
             items.value.splice(indexToRemove, 1);
+            return true;
         }).catch((error) => {
-            throw ("Error en el borrado")
+            return false;
         });
     }
 }
@@ -99,29 +78,22 @@ export default {
         this.loadItems();
     },
     methods: {
-        updateEditedItem(newEditedItemValue){
-            console.log("newEditedItemValue")
-            console.log(newEditedItemValue)
-            console.log(this.editedItem)
+        updateEditedItem(newEditedItemValue) {
+            editedItem.value.id = newEditedItemValue.id
+            editedItem.value.first_name = newEditedItemValue.first_name;
+            editedItem.value.last_name = newEditedItemValue.last_name;
+            editedItem.value.email = newEditedItemValue.email
             console.log(editedItem)
-            editedItem.first_name = newEditedItemValue.first_name;
-            editedItem.email = newEditedItemValue.email
-            editedItem.value = newEditedItemValue
         },
         async loadItems() {
             this.items = [];
-            axios.get(vue_app_backend + '/v1/users', {
-                headers: {
-                    'Accept': 'application/json',
-                    'X-API-Version': '1',
-                }
-            })
+            getUsers()
                 .then((response) => {
                     this.items = response.data;
                     this.items.forEach(
                         (element) => {
                             element.deleteMessage = "Seguro que quieres borrar " + element.email + "?";
-                            element.deleteFunction = deleteUser
+                            element.deleteFunction = deleteUser;
                         }
                     )
                 })
