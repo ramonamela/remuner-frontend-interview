@@ -19,4 +19,24 @@ async function getTeams() {
     })
 }
 
-export { deleteTeam, getTeams }
+async function createTeam(team) {
+    return axios.post(vue_app_backend + '/v1/teams', team, {
+        headers: {
+            'Accept': 'application/json',
+            'X-API-Version': '1',
+            'ContentType': 'application/json',
+        },
+    })
+}
+
+async function updateTeam(team) {
+    return axios.post(vue_app_backend + '/v1/teams/' + team.id, team, {
+        headers: {
+            'Accept': 'application/json',
+            'X-API-Version': '1',
+            'ContentType': 'application/json',
+        },
+    })
+}
+
+export { deleteTeam, getTeams, createTeam, updateTeam }

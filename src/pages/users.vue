@@ -18,10 +18,6 @@
                             <v-select v-model="editedItem.teams" :items="teams" label="Equipos" multiple
                                 persistent-hint></v-select>
                         </v-col>
-                        <v-col cols="12" sm="12" md="12">
-                            <v-select v-model="editedItem.integrations" :items="integrations" label="Integraciones" multiple
-                                persistent-hint></v-select>
-                        </v-col>
                     </v-row>
                 </v-container>
             </v-card-text>
@@ -32,14 +28,11 @@
 <script>
 import ViewComponent from '@/components/ViewComponent.vue'
 import PaginatedTable from '@/components/PaginatedTable.vue'
-import axios from 'axios';
 import { ref } from 'vue';
 import { deleteUser as deleteItem, getUsers, createUser, updateUser } from '@/helpers/http/users.js'
 import { getIntegrations } from '@/helpers/http/integrations';
 import { getTeams } from '@/helpers/http/teams';
-import { generateObjectFromAttribute } from '@/helpers/objects/manipulation.js'
 
-const vue_app_backend = import.meta.env.VITE_APP_BACKEND_BASE_URL;
 let items = ref([]);
 let teams = ref([]);
 let integrations = ref([]);
@@ -50,9 +43,9 @@ let teamsNameDict = ref({});
 
 const editedItem = ref({
     id: null,
-    first_name: "a",
-    last_name: "a",
-    email: "a",
+    first_name: "",
+    last_name: "",
+    email: "",
     teams: [],
     integrations: [],
 })
@@ -106,12 +99,11 @@ export default {
     },
     methods: {
         async loadTeams() {
-            getTeams().then((response) => response.data).then(
+            return getTeams().then((response) => response.data).then(
                 (teams) => {
                     this.teams = teams.map(
                         (team) => team.name
-                    ),
-                        this.teamsNameDict = generateObjectFromAttribute(teams, "name");
+                    );
                     this.teamsNameToIdDict = {}
                     teams.forEach(
                         (team) => {
@@ -127,12 +119,11 @@ export default {
             ).catch((error) => { console.log(error) })
         },
         async loadIntegrations() {
-            getIntegrations().then((response) => response.data).then(
+            return getIntegrations().then((response) => response.data).then(
                 (integrations) => {
                     this.integrations = integrations.map(
                         (integration) => integration.name
-                    ),
-                        this.integrationsNameDict = generateObjectFromAttribute(integrations, "name");
+                    );
                     this.integrationsNameToIdDict = {}
                     integrations.forEach(
                         (integration) => {

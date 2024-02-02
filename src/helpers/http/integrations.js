@@ -19,4 +19,25 @@ async function getIntegrations() {
     })
 }
 
-export { deleteIntegration, getIntegrations }
+async function createIntegration(integration) {
+    return axios.post(vue_app_backend + '/v1/integrations', integration, {
+        headers: {
+            'Accept': 'application/json',
+            'X-API-Version': '1',
+            'ContentType': 'application/json',
+        },
+    })
+}
+
+async function updateIntegration(integration) {
+    return axios.post(vue_app_backend + '/v1/integrations/' + integration.id, integration, {
+        headers: {
+            'Accept': 'application/json',
+            'X-API-Version': '1',
+            'ContentType': 'application/json',
+        },
+    })
+}
+
+
+export { deleteIntegration, getIntegrations, createIntegration, updateIntegration }
