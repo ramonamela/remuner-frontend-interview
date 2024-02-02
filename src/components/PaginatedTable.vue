@@ -4,19 +4,19 @@
             <v-card-text class="text-h5">{{ deletedElement.deleteMessage }}</v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue-darken-1" variant="elevated" @click="closeDelete">Cancelar</v-btn>
-                <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
+                <v-btn color="primary" variant="elevated" @click="closeDelete">Cancelar</v-btn>
+                <v-btn color="error" variant="elevated" @click="deleteItemConfirm">Eliminar</v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
         </v-card>
     </v-dialog>
 
-    <v-dialog v-model="dialogDeleteError" max-width="500px">
+    <v-dialog v-model="dialogError" max-width="500px">
         <v-card>
-            <v-card-text class="text-h5">Error en el borrado</v-card-text>
+            <v-card-text class="text-h5">{{ dialogErrorMessage }}</v-card-text>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue-darken-1" variant="elevated" @click="closeDeleteError">Entendido</v-btn>
+                <v-btn color="primary" variant="elevated" @click="closeDeleteError">Entendido</v-btn>
                 <v-spacer></v-spacer>
             </v-card-actions>
         </v-card>
@@ -24,7 +24,7 @@
 
     <div class="paginated-data-container">
         <v-data-table :headers="enlargedHeaderDefinition" :items="firstLevelItems">
-            <template v-slot:top>
+            <template v-slot:top v-if="showCreate">
                 <v-toolbar flat>
                     <v-spacer></v-spacer>
                     <v-dialog v-model="dialogCreateEdit" max-width="700px" @click:outside="closeEdit">
@@ -35,30 +35,26 @@
                         </template>
                         <v-card>
                             <slot></slot>
-                            <v-card>
+                            <v-col cols="12" sm="12" md="12">
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
-                                    <v-btn color="blue-darken-1" variant="flat" @click="closeEdit">
+                                    <v-btn color="primary" variant="text" @click="closeEdit">
                                         Cancelar
                                     </v-btn>
-                                    <v-btn color="blue-darken-1" variant="text" @click="saveEdit">
+                                    <v-btn color="success" variant="flat" @click="saveEdit">
                                         Guardar
                                     </v-btn>
                                 </v-card-actions>
-                            </v-card>
+                            </v-col>
                         </v-card>
                     </v-dialog>
 
                 </v-toolbar>
             </template>
             <template v-slot:item.delete-table-item="{ item }">
-                            <v-icon
-                size="small"
-                class="me-2"
-                @click="editItem(item)"
-            >
-                mdi-pencil
-            </v-icon>
+                <v-icon size="small" class="me-2" @click="editItem(item)">
+                    mdi-pencil
+                </v-icon>
                 <v-icon size="small" @click="deleteItem(item)">
                     mdi-delete
                 </v-icon>
@@ -84,8 +80,9 @@ import { ref, toRaw } from 'vue';
 
 const dialogCreateEdit = ref(false);
 const dialogDelete = ref(false);
-const dialogDeleteError = ref(false);
-const deletedElement = ref({deleteMessage: ""});
+const dialogError = ref(false);
+const dialogErrorMessage = ref("");
+const deletedElement = ref({ deleteMessage: "" });
 const editedElement = ref({});
 let defaultEditedItem;
 
@@ -112,10 +109,11 @@ export default {
         return {
             dialogCreateEdit,
             dialogDelete,
-            dialogDeleteError,
+            dialogError,
             deletedElement,
             editedElement,
             defaultEditedItem,
+            dialogErrorMessage,
         }
     },
     computed: {
@@ -132,15 +130,18 @@ export default {
         firstLevelItems() {
             return this.items
         },
+        showCreate() {
+            return !(this.updateEditedItem === undefined)
+        }
     },
     mounted() {
         console.log("Set default edited item")
         console.log(defaultEditedItem)
-        defaultEditedItem = {...toRaw(this.editedItem)};
+        defaultEditedItem = { ...toRaw(this.editedItem) };
         console.log(defaultEditedItem)
     },
     methods: {
-        createItem(){
+        createItem() {
             console.log("Create item")
             this.updateEditedItem(defaultEditedItem)
         },
@@ -167,37 +168,55 @@ export default {
             deletedElement.value = item
         },
         async deleteItemConfirm(item) {
-            await deletedElement.value.deleteFunction(deletedElement.value).then(
+            deletedElement.value.deleteFunction(deletedElement.value).then(
                 (result) => {
-                    console.log("Todo ha ido bien")
-                    console.log(result)
-                    if(!result) {
-                        console.log(result)
-                        dialogDeleteError.value = true;
+                    if (!result) {
+                        dialogErrorMessage.value = "Error en el borrado"
+                        dialogError.value = true;
                     }
                 }
-                ).catch(() => {
-                console.log("Estamos en error")
-                dialogDeleteError.value = true
+            ).catch((error) => {
+                dialogErrorMessage.value = "Error en el borrado"
+                dialogError.value = true
             });
-            console.log("Cerrar delete item dialog")
             dialogDelete.value = false;
         },
         closeDelete() {
             dialogDelete.value = false;
-            deletedElement.value = {deleteMessage: ""};
+            deletedElement.value = { deleteMessage: "" };
         },
         closeDeleteError() {
-            dialogDeleteError.value = false;
+            dialogError.value = false;
         },
         closeEdit() {
             console.log("close");
             dialogCreateEdit.value = false;
             editedElement.value = -1;
         },
-        saveEdit() {
-            console.log("save")
-            console.log()
+        async saveEdit() {
+            if (this.editedItem.id === null) {
+                await this.editedItem.createFunction().then(
+                    (result) => {
+                        if (!result) {
+                            dialogErrorMessage.value = "Error en la creación"
+                            dialogError.value = true;
+                        }
+                    }
+                ).catch((error) => {
+                    console.log(error)
+                    dialogErrorMessage.value = "Error en la creación"
+                    dialogError.value = true;
+                })
+            } else {
+                await this.editedItem.editFunction().then(
+                    (result) => {
+                        if (!result) {
+                            dialogErrorMessage.value = "Error en la edición"
+                            dialogError.value = true;
+                        }
+                    }
+                )
+            }
             dialogCreateEdit.value = false;
             editedElement.value = -1;
         }

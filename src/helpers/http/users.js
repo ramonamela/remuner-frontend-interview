@@ -19,4 +19,24 @@ async function getUsers() {
     })
 }
 
-export { deleteUser, getUsers }
+async function createUser(user) {
+    return axios.post(vue_app_backend + '/v1/users', user, {
+        headers: {
+            'Accept': 'application/json',
+            'X-API-Version': '1',
+            'ContentType': 'application/json',
+        },
+    })
+}
+
+async function updateUser(user) {
+    return axios.post(vue_app_backend + '/v1/users/' + user.id, user, {
+        headers: {
+            'Accept': 'application/json',
+            'X-API-Version': '1',
+            'ContentType': 'application/json',
+        },
+    })
+}
+
+export { deleteUser, getUsers, createUser, updateUser }
