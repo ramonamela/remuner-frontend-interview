@@ -25,10 +25,10 @@
     <div class="paginated-data-container">
         <v-data-table :headers="enlargedHeaderDefinition" :items="firstLevelItems">
             <template v-slot:top v-if="showCreate">
-                <v-toolbar flat>
+                <v-toolbar flat class="general-background-color">
                     <v-spacer></v-spacer>
                     <v-dialog v-model="dialogCreateEdit" max-width="700px" @click:outside="closeEdit">
-                        <template v-slot:activator="{ props }">
+                        <template v-slot:activator="{ props }" background-color="background">
                             <v-btn color="primary" dark class="mb-2" v-bind="props" variant="tonal" @click="createItem">
                                 Crear
                             </v-btn>
@@ -62,10 +62,11 @@
 
             <template v-slot:expanded-row="{ columns, item }">
                 <tr>
-                    <td :colspan="columns.length">
-                        <div class="inner-paginated-data-container">
-                            <PaginatedTable v-for="(currentTable, index) in generateSecondaryTables(item)"
-                                :headerDefinition="currentTable.header" :items="currentTable.items"></PaginatedTable>
+                    <td :colspan="columns.length" class="pa-0">
+                        <div class="inner-paginated-data-container general-background-color">
+                            <EditablePaginatedTable v-for="(currentTable, index) in generateSecondaryTables(item)"
+                                :headerDefinition="currentTable.header" :items="currentTable.items">
+                            </EditablePaginatedTable>
                         </div>
                     </td>
                 </tr>
@@ -135,20 +136,15 @@ export default {
         }
     },
     mounted() {
-        console.log("Set default edited item")
-        console.log(defaultEditedItem)
         defaultEditedItem = { ...toRaw(this.editedItem) };
-        console.log(defaultEditedItem)
     },
     methods: {
         createItem() {
-            console.log("Create item")
             this.updateEditedItem(defaultEditedItem)
         },
         generateSecondaryTables(item) {
             let secondaryTables = []
             this.secondaryTableHeaders.forEach(element => {
-                console.log(item[element.key])
                 secondaryTables.push(
                     {
                         header: element.definition,
@@ -189,7 +185,6 @@ export default {
             dialogError.value = false;
         },
         closeEdit() {
-            console.log("close");
             dialogCreateEdit.value = false;
             editedElement.value = -1;
         },
@@ -242,12 +237,18 @@ th.v-data-table__td {
 }
 
 .inner-paginated-data-container {
-    padding: 15px;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    padding: 0px;
+    margin: 0px;
     box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
     display: flex;
     justify-content: center;
+    border-left: 1px solid white;
+    /* Add a left border with your desired color */
+    border-right: 1px solid white;
+}
+
+.general-background-color {
+    background-color: #E9E9EC;
 }
 </style>
 

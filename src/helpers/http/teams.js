@@ -39,4 +39,13 @@ async function updateTeam(team) {
     })
 }
 
-export { deleteTeam, getTeams, createTeam, updateTeam }
+async function getTeamsStats() {
+    return axios.get(vue_app_backend + '/v1/teams/stats', {
+        headers: {
+            'Accept': 'application/json',
+            'X-API-Version': '1',
+        }
+    })
+}
+
+export { deleteTeam, getTeams, createTeam, updateTeam, getTeamsStats }

@@ -25,10 +25,9 @@ services:
         source: ./
         target: /app
     ports:
-      - "3000:3000"
+      - "8080:8080"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    entrypoint: npm run dev
 
   remuner-frontend-prod:
     build:

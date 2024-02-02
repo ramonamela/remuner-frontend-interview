@@ -2,7 +2,12 @@
     <router-link v-if="targetRoute" style="text-decoration: none; color: inherit;" :to="targetRoute">
         <div class="container">
             <div class="title">{{ title }}</div>
-            <div class="counter">{{ counter }}</div>
+            <div v-if="counter === undefined" class="spinner">
+                <!-- Add your spinner component or HTML/CSS here -->
+                <!-- Example spinner using FontAwesome -->
+                <v-progress-circular indeterminate color="#5E6AD2"></v-progress-circular>
+            </div>
+            <div v-else class="counter">{{ counter }}</div>
         </div>
     </router-link>
 </template>

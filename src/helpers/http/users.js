@@ -39,4 +39,13 @@ async function updateUser(user) {
     })
 }
 
-export { deleteUser, getUsers, createUser, updateUser }
+async function getUsersStats() {
+    return axios.get(vue_app_backend + '/v1/users/stats', {
+        headers: {
+            'Accept': 'application/json',
+            'X-API-Version': '1',
+        }
+    })
+}
+
+export { deleteUser, getUsers, createUser, updateUser, getUsersStats }

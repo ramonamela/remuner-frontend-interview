@@ -1,6 +1,6 @@
 <template>
     <ViewComponent title="EQUIPOS">
-        <PaginatedTable :headerDefinition="headerDefinition" :items="items" :secondaryTableHeaders="secondaryTableHeaders" deleteDialogConfig="true" :editedItem="editedItem" :updateEditedItem="updateEditedItem">
+        <EditablePaginatedTable :headerDefinition="headerDefinition" :items="items" :secondaryTableHeaders="secondaryTableHeaders" deleteDialogConfig="true" :editedItem="editedItem" :updateEditedItem="updateEditedItem">
             <v-card-text>
                 <v-container>
                     <v-row>
@@ -14,13 +14,13 @@
                     </v-row>
                 </v-container>
             </v-card-text>
-        </PaginatedTable>
+        </EditablePaginatedTable>
     </ViewComponent>
 </template>
   
 <script>
 import ViewComponent from '@/components/ViewComponent.vue'
-import PaginatedTable from '@/components/PaginatedTable.vue'
+import EditablePaginatedTable from '@/components/EditablePaginatedTable.vue'
 import { ref } from 'vue';
 import {deleteTeam as deleteItem, getTeams, createTeam, updateTeam} from '@/helpers/http/teams.js'
 import { getUsers } from '@/helpers/http/users';
@@ -170,6 +170,6 @@ export default {
                 });
         }
     },
-    components: { PaginatedTable }
+    components: { EditablePaginatedTable }
 }
 </script>

@@ -16,6 +16,8 @@ const remunerTheme = {
   colors: {
     primary: "#5E6AD2",
     secondary: "#D9DBE9",
+    background: "#E9E9EC",
+    accent: "#F4F5F8"
   }
 }
 

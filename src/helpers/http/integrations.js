@@ -39,5 +39,14 @@ async function updateIntegration(integration) {
     })
 }
 
+async function getIntegrationsStats() {
+    return axios.get(vue_app_backend + '/v1/integrations/stats', {
+        headers: {
+            'Accept': 'application/json',
+            'X-API-Version': '1',
+        }
+    })
+}
 
-export { deleteIntegration, getIntegrations, createIntegration, updateIntegration }
+
+export { deleteIntegration, getIntegrations, createIntegration, updateIntegration, getIntegrationsStats }

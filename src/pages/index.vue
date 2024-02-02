@@ -6,38 +6,38 @@
         <v-col cols="12" md="6">
           <GridCard cardTitle="Prueba técnica" :cardActions="firstCardActions">
             <div class="index-prueba-tecnica-container index-prueba-tecnica-text-format">
-            <div>
-              <p class="underlined-text">Consigna:</p>
+              <div>
+                <p class="underlined-text">Consigna:</p>
+              </div>
+              <AvatarList :items="firstListItems" avatar="mdi-circle-small"></AvatarList>
+              <div>
+                <p class="underlined-text">Requerimientos:</p>
+              </div>
+              <AvatarList :items="secondListItems" avatar="mdi-circle-small"></AvatarList>
             </div>
-            <AvatarList :items="firstListItems" avatar="mdi-circle-small"></AvatarList>
-            <div>
-              <p class="underlined-text">Requerimientos:</p>
-            </div>
-            <AvatarList :items="secondListItems" avatar="mdi-circle-small"></AvatarList>
-          </div>
           </GridCard>
         </v-col>
         <v-col cols="12" md="6">
           <v-row>
             <v-col cols="12">
               <GridCard>
-                <CounterCard title="Usuarios" counter="15" targetRoute="/users"></CounterCard>
+                <CounterCard title="Usuarios" :counter="usersCount" targetRoute="/users"></CounterCard>
               </GridCard>
             </v-col>
             <v-col cols="12">
               <GridCard>
-                <CounterCard title="Equipos" counter="2" targetRoute="/teams"></CounterCard>
+                <CounterCard title="Equipos" :counter="teamsCount" targetRoute="/teams"></CounterCard>
               </GridCard>
             </v-col>
             <v-col cols="12">
               <GridCard>
-                <CounterCard title="Integraciones" counter="4" targetRoute="/integrations"></CounterCard>
+                <CounterCard title="Integraciones" :counter="integrationsCount" targetRoute="/integrations"></CounterCard>
               </GridCard>
             </v-col>
           </v-row>
         </v-col>
         <v-col cols="12" md="12">
-          <GridCard cardTitle="Modelos de datos"  :cardActions="secondCardActions">
+          <GridCard cardTitle="Modelos de datos" :cardActions="secondCardActions">
             <div class="index-remuner-data-model-image">
               <v-img src="@/assets/remuner-data-model.png" />
             </div>
@@ -48,31 +48,52 @@
   </ViewComponent>
 </template>
 
-<script setup>
+<script>
 import GridCard from '@/components/GridCard.vue'
 import ViewComponent from '@/components/ViewComponent.vue'
+import { getIntegrationsStats } from '@/helpers/http/integrations';
+import { getTeamsStats } from '@/helpers/http/teams';
+import { getUsersStats } from '@/helpers/http/users';
+import { ref } from 'vue';
 
-const firstCardActions = [
-  { title: 'Config', icon: 'mdi-cog', action: () => { alert("Config en prueba técnica") } },
-  { title: 'Editar', icon: 'mdi-pencil', action: () => { alert("Editar en prueba técnica") } },
-];
+const integrationsCount = ref(null);
+const teamsCount = ref(null);
+const usersCount = ref(null);
 
-const secondCardActions = [
-  { title: 'Config', icon: 'mdi-cog', action: () => { alert("Config en modelos de datos") } },
-  { title: 'Editar', icon: 'mdi-pencil', action: () => { alert("Editar en modelos de datos") } },
-];
+export default {
+  data() {
+    return {
+      firstCardActions: [
+        { title: 'Config', icon: 'mdi-cog', action: () => { alert("Config en prueba técnica") } },
+        { title: 'Editar', icon: 'mdi-pencil', action: () => { alert("Editar en prueba técnica") } },
+      ],
 
-const firstListItems = [
-  "Replicar este dashboard respetando estilos y colores definidos en Figma.", 
-  "Agregar vistas para manejo de usuarios, equipos e integraciones, linkeables desde el panel de navegación.",
-  "Realizar un backend para el CRUD de los datos de usuarios, equipos e integraciones implementando los modelos descriptos abajo."
-]
+      secondCardActions: [
+        { title: 'Config', icon: 'mdi-cog', action: () => { alert("Config en modelos de datos") } },
+        { title: 'Editar', icon: 'mdi-pencil', action: () => { alert("Editar en modelos de datos") } },
+      ],
 
-const secondListItems = [
-  "Para el frontend utilizar el framework Vue.js con librería de componentes Vuetify.",
-  "Para el backend utilizar el framework Fastapi.",
-  "Entrega del código de frontend y backend en un zip."
-]
+      firstListItems: [
+        "Replicar este dashboard respetando estilos y colores definidos en Figma.",
+        "Agregar vistas para manejo de usuarios, equipos e integraciones, linkeables desde el panel de navegación.",
+        "Realizar un backend para el CRUD de los datos de usuarios, equipos e integraciones implementando los modelos descriptos abajo."
+      ],
+      secondListItems: [
+        "Para el frontend utilizar el framework Vue.js con librería de componentes Vuetify.",
+        "Para el backend utilizar el framework Fastapi.",
+        "Entrega del código de frontend y backend en un zip."
+      ],
+      integrationsCount,
+      teamsCount,
+      usersCount,
+    }
+  },
+  mounted() {
+    getIntegrationsStats().then((response) => {integrationsCount.value = response.data.count});
+    getTeamsStats().then((response) => {teamsCount.value = response.data.count});
+    getUsersStats().then((response) => {usersCount.value = response.data.count});
+  }
+}
 
 </script>
 
@@ -83,8 +104,10 @@ const secondListItems = [
   padding-right: 70px;
   padding-top: 15px;
 }
+
 .underlined-text {
-  text-decoration: underline; /* Add underline style */
+  text-decoration: underline;
+  /* Add underline style */
 }
 
 .index-prueba-tecnica-container {
@@ -93,11 +116,11 @@ const secondListItems = [
 
 .index-prueba-tecnica-text-format {
   color: #000;
-font-family: Montserrat;
-font-size: 12px;
-font-style: normal;
-font-weight: 400;
-line-height: 14px;
-letter-spacing: -0.5px;
+  font-family: Montserrat;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 14px;
+  letter-spacing: -0.5px;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
     <ViewComponent title="USUARIOS">
-        <PaginatedTable :headerDefinition="headerDefinition" :items="items" :secondaryTableHeaders="secondaryTableHeaders"
+        <EditablePaginatedTable :headerDefinition="headerDefinition" :items="items" :secondaryTableHeaders="secondaryTableHeaders"
             deleteDialogConfig="true" :editedItem="editedItem" :updateEditedItem="updateEditedItem">
             <v-card-text>
                 <v-container>
@@ -21,13 +21,13 @@
                     </v-row>
                 </v-container>
             </v-card-text>
-        </PaginatedTable>
+        </EditablePaginatedTable>
     </ViewComponent>
 </template>
   
 <script>
 import ViewComponent from '@/components/ViewComponent.vue'
-import PaginatedTable from '@/components/PaginatedTable.vue'
+import EditablePaginatedTable from '@/components/EditablePaginatedTable.vue'
 import { ref } from 'vue';
 import { deleteUser as deleteItem, getUsers, createUser, updateUser } from '@/helpers/http/users.js'
 import { getIntegrations } from '@/helpers/http/integrations';
@@ -118,6 +118,20 @@ export default {
                 }
             ).catch((error) => { console.log(error) })
         },
+        async loadItems() {
+            getUsers()
+                .then((response) => {
+                    this.items = response.data;
+                    this.items.forEach(
+                        (element) => {
+                            this.addActionsToElement(element)
+                        }
+                    )
+                })
+                .catch((error) => {
+                    console.error('There was a problem with the request:', error);
+                });
+        },
         async loadIntegrations() {
             return getIntegrations().then((response) => response.data).then(
                 (integrations) => {
@@ -139,7 +153,6 @@ export default {
             ).catch((error) => { console.log(error) })
         },
         updateEditedItem(newEditedItemValue) {
-            console.log(newEditedItemValue)
             editedItem.value.id = newEditedItemValue.id
             editedItem.value.first_name = newEditedItemValue.first_name;
             editedItem.value.last_name = newEditedItemValue.last_name;
@@ -148,52 +161,41 @@ export default {
             editedItem.value.teams = newEditedItemValue.teams.map(team => team.name)
             this.addActionsToElement(editedItem.value)
         },
-        async saveEditedElement(element) {
-            let elementToSend = { ...element }
-
-            elementToSend.integrations = element.integrations.map(
+        async formatElementToSend(elementToSend, originalElement) {
+            elementToSend.integrations = originalElement.integrations.map(
                 (integration) => this.integrationsNameToIdDict[integration]
             )
-            elementToSend.teams = element.teams.map(
+            elementToSend.teams = originalElement.teams.map(
                 (team) => this.teamsNameToIdDict[team]
             )
-
-            console.log(items.value)
-
+        },
+        async formatElementToAdd(elementToAdd, originalElement) {
+            elementToAdd.integrations = originalElement.integrations.map(
+                (integration) => this.integrationsNameDict[integration]
+            )
+            elementToAdd.teams = originalElement.teams.map(
+                (team) => this.teamsNameDict[team]
+            )
+        },
+        async saveEditedElement(element) {
+            let elementToSend = { ...element }
+            this.formatElementToSend(elementToSend, element);
             return updateUser(elementToSend).then((result) => {
-
                 let elementToAdd = { ...element }
                 let indexToUpdate = items.value.findIndex(
                     listItem => listItem.id === element.id
                 )
-                elementToAdd.integrations = element.integrations.map(
-                    (integration) => this.integrationsNameDict[integration]
-                )
-                elementToAdd.teams = element.teams.map(
-                    (team) => this.teamsNameDict[team]
-                )
+                this.formatElementToAdd(elementToAdd, element);
                 items.value[indexToUpdate] = elementToAdd;
                 return true
             }).catch((error) => { return false })
         },
         async saveCreatedElement(element) {
             let elementToSend = { ...element }
-
-            elementToSend.integrations = element.integrations.map(
-                (integration) => this.integrationsNameToIdDict[integration]
-            )
-            elementToSend.teams = element.teams.map(
-                (team) => this.teamsNameToIdDict[team]
-            )
-
+            this.formatElementToSend(elementToSend, element);
             return createUser(elementToSend).then((result) => {
                 let elementToAdd = { ...element }
-                elementToAdd.integrations = element.integrations.map(
-                    (integration) => this.integrationsNameDict[integration]
-                )
-                elementToAdd.teams = element.teams.map(
-                    (team) => this.teamsNameDict[team]
-                )
+                this.formatElementToAdd(elementToAdd, element);
                 elementToAdd.id = result.data.id
                 items.value.push(elementToAdd);
                 return true
@@ -204,24 +206,8 @@ export default {
             element.deleteFunction = deleteUser;
             element.editFunction = () => this.saveEditedElement(element);
             element.createFunction = () => this.saveCreatedElement(element);
-        },
-        async loadItems() {
-            console.log("Load items")
-            this.items = [];
-            getUsers()
-                .then((response) => {
-                    this.items = response.data;
-                    this.items.forEach(
-                        (element) => {
-                            this.addActionsToElement(element)
-                        }
-                    )
-                })
-                .catch((error) => {
-                    console.error('There was a problem with the Axios request:', error);
-                });
         }
     },
-    components: { PaginatedTable },
+    components: { EditablePaginatedTable },
 }
 </script>

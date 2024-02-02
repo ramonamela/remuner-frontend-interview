@@ -1,6 +1,6 @@
 <template>
   <ViewComponent title="INTEGRACIONES">
-    <PaginatedTable :headerDefinition="headerDefinition" :items="items" deleteDialogConfig="true" :editedItem="editedItem"
+    <EditablePaginatedTable :headerDefinition="headerDefinition" :items="items" deleteDialogConfig="true" :editedItem="editedItem"
       :updateEditedItem="updateEditedItem">
       <v-card-text>
         <v-container>
@@ -17,13 +17,13 @@
           </v-row>
         </v-container>
       </v-card-text>
-    </PaginatedTable>
+    </EditablePaginatedTable>
   </ViewComponent>
 </template>
   
 <script>
 import ViewComponent from '@/components/ViewComponent.vue'
-import PaginatedTable from '@/components/PaginatedTable.vue'
+import EditablePaginatedTable from '@/components/EditablePaginatedTable.vue'
 import { ref } from 'vue'
 import { deleteIntegration as deleteItem, getIntegrations, createIntegration, updateIntegration } from '@/helpers/http/integrations.js';
 import { getUsers } from '@/helpers/http/users';
@@ -167,7 +167,7 @@ export default {
         });
     }
   },
-  components: { PaginatedTable }
+  components: { EditablePaginatedTable }
 }
 
 </script>
