@@ -14,6 +14,8 @@ services:
       - "8080:8080"
     depends_on:
       - build
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   remuner-frontend-dev:
     build:
