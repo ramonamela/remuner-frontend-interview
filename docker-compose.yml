@@ -14,8 +14,6 @@ services:
       - "8080:8080"
     depends_on:
       - build
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   remuner-frontend-dev:
     build:
@@ -28,6 +26,8 @@ services:
         target: /app
     ports:
       - "3000:3000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     entrypoint: npm run dev
 
   remuner-frontend-prod:
