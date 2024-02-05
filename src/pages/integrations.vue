@@ -35,7 +35,7 @@ let usersNameDict = ref({});
 
 const editedItem = ref({
   id: null,
-  name: "a",
+  name: "",
   token: "",
   user: "",
 })
